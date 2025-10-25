@@ -1,72 +1,43 @@
 #!/usr/bin/python3
-"""
-    BaseCache module
-"""
+''' FIFO caching: Create a class FIFOCache that inherits from BaseCaching
+                  and is a caching system
+'''
 
-from base_caching import BaseCaching
+BaseCaching = __import__('base_caching').BaseCaching
 
 
 class FIFOCache(BaseCaching):
-    """ FIFOCache define a FIFO algorithm to use cache
-
-      To use:
-      >>> my_cache = BasicCache()
-      >>> my_cache.print_cache()
-      Current cache:
-
-      >>> my_cache.put("A", "Hello")
-      >>> my_cache.print_cache()
-      A: Hello
-
-      >>> print(my_cache.get("A"))
-      Hello
-
-      Ex:
-      >>> print(self.cache_data)
-      {A: "Hello", B: "World", C: "Holberton", D: "School"}
-      >>> my_cache.put("C", "Street")
-      >>> print(self.cache_data)
-      {A: "Hello", B: "World", C: "Street", D: "School"}
-
-      >>> my_cache.put("F", "COD")
-      DISCARD: A
-      >>> print(self.cache_data)
-      {F: "COD", B: "World", C: "Holberton", D: "School"}
-    """
+    ''' A FIFO Cache.
+        Inherits all behaviors from BaseCaching except, upon any attempt to
+        add an entry to the cache when it is at max capacity (as specified by
+        BaseCaching.MAX_ITEMS), it discards the oldest entry to accommodate for
+        the new one.
+        Attributes:
+          __init__ - method that initializes class instance
+          put - method that adds a key/value pair to cache
+          get - method that retrieves a key/value pair from cache '''
 
     def __init__(self):
-        """ Initiliaze
-        """
+        ''' Initialize class instance. '''
         super().__init__()
+        self.keys = []
 
     def put(self, key, item):
-        """
-            modify cache data
-
-            Args:
-                key: of the dict
-                item: value of the key
-        """
-        if key or item is not None:
-            valuecache = self.get(key)
-            if valuecache is None:
-                if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-                    keydel = list(self.cache_data.keys())[0]
-                    del self.cache_data[keydel]
-                    print("DISCARD: {}".format(keydel))
-
+        ''' Add key/value pair to cache data.
+            If cache is at max capacity (specified by BaseCaching.MAX_ITEMS),
+            discard oldest entry in cache to accommodate new entry. '''
+        if key is not None and item is not None:
             self.cache_data[key] = item
+            if key not in self.keys:
+                self.keys.append(key)
+            if len(self.keys) > BaseCaching.MAX_ITEMS:
+                discard = self.keys.pop(0)
+                del self.cache_data[discard]
+                print('DISCARD: {:s}'.format(discard))
 
     def get(self, key):
-        """
-            modify cache data
-
-            Args:
-                key: of the dict
-
-            Return:
-                value of the key
-        """
-
-        valuecache = self.cache_data.get(key)
-        return valuecache
+        ''' Return value stored in `key` key of cache.
+            If key is None or does not exist in cache, return None. '''
+        if key is not None and key in self.cache_data:
+            return self.cache_data[key]
+        return None

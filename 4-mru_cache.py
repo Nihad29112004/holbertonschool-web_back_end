@@ -1,83 +1,47 @@
 #!/usr/bin/python3
-"""
-    MRU module
-"""
+''' MRU Caching: Create a class MRUCache that inherits from BaseCaching
+                 and is a caching system
+'''
 
-from base_caching import BaseCaching
+BaseCaching = __import__('base_caching').BaseCaching
 
 
 class MRUCache(BaseCaching):
-    """ MRUCache define MRU algorithm to use cache
-
-      To use:
-      >>> my_cache = BasicCache()
-      >>> my_cache.print_cache()
-      Current cache:
-
-      >>> my_cache.put("A", "Hello")
-      >>> my_cache.print_cache()
-      A: Hello
-
-      Ex:
-      >>> my_cache.print_cache()
-      Current cache:
-      A: Hello
-      B: World
-      C: Holberton
-      D: School
-      >>> print(my_cache.get("B"))
-      World
-      DISCARD: B
-    """
+    ''' An MRU Cache.
+        Inherits all behaviors from BaseCaching except, upon any attempt to
+        add an entry to the cache when it is at max capacity (as specified by
+        BaseCaching.MAX_ITEMS), it discards the most recently used entry to
+        accommodate for the new one.
+        Attributes:
+          __init__ - method that initializes class instance
+          put - method that adds a key/value pair to cache
+          get - method that retrieves a key/value pair from cache '''
 
     def __init__(self):
-        """ Initiliaze
-        """
+        ''' Initialize class instance. '''
         super().__init__()
-        self.leastrecent = []
+        self.keys = []
 
     def put(self, key, item):
-        """
-            modify cache data
-
-            Args:
-                key: of the dict
-                item: value of the key
-        """
-        if key or item is not None:
-            valuecache = self.get(key)
-            # Make a new
-            if valuecache is None:
-                if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-                    keydel = self.leastrecent
-                    lendel = len(keydel) - 1
-                    del self.cache_data[keydel[lendel]]
-                    print("DISCARD: {}".format(self.leastrecent.pop()))
-            else:
-                del self.cache_data[key]
-
-            if key in self.leastrecent:
-                self.leastrecent.remove(key)
-                self.leastrecent.append(key)
-            else:
-                self.leastrecent.append(key)
-
+        ''' Add key/value pair to cache data.
+            If cache is at max capacity (specified by BaseCaching.MAX_ITEMS),
+            discard most recently used entry in cache to accommodate new
+            entry. '''
+        if key is not None and item is not None:
             self.cache_data[key] = item
+            if key not in self.keys:
+                self.keys.append(key)
+            else:
+                self.keys.append(self.keys.pop(self.keys.index(key)))
+            if len(self.keys) > BaseCaching.MAX_ITEMS:
+                discard = self.keys.pop(-2)
+                del self.cache_data[discard]
+                print('DISCARD: {:s}'.format(discard))
 
     def get(self, key):
-        """
-            modify cache data
-
-            Args:
-                key: of the dict
-
-            Return:
-                value of the key
-        """
-        valuecache = self.cache_data.get(key)
-
-        if valuecache:
-            self.leastrecent.remove(key)
-            self.leastrecent.append(key)
-
-        return valuecache
+        ''' Return value stored in `key` key of cache.
+            If key is None or does not exist in cache, return None. '''
+        if key is not None and key in self.cache_data:
+            self.keys.append(self.keys.pop(self.keys.index(key)))
+            return self.cache_data[key]
+        return None

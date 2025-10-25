@@ -1,48 +1,28 @@
 #!/usr/bin/python3
-"""
-    BaseCache module
-"""
+''' Basic Dictionary: Create a class BasicCache that inherits from BaseCaching
+                      and is a caching system
+'''
 
-from base_caching import BaseCaching
+BaseCaching = __import__('base_caching').BaseCaching
 
 
 class BasicCache(BaseCaching):
-    """ BasicCache define a intro to use cache
-
-      To use:
-      >>> my_cache = BasicCache()
-      >>> my_cache.print_cache()
-      Current cache:
-
-      >>> my_cache.put("A", "Hello")
-      >>> my_cache.print_cache()
-      A: Hello
-
-      >>> print(my_cache.get("A"))
-      Hello
-    """
+    ''' A basic cache.
+        Inherits from class BaseCaching.
+        Attributes:
+          put - method that adds a key/value pair to cache
+          get - method that retrieves a key/value pair from cache
+    '''
 
     def put(self, key, item):
-        """
-            modify cache data
-
-            Args:
-                key: of the dict
-                item: value of the key
-        """
-        if key or item is not None:
+        ''' Add key/value pair to cache.
+        If either `key` or `item` is None, do nothing. '''
+        if key is not None and item is not None:
             self.cache_data[key] = item
 
     def get(self, key):
-        """
-            modify cache data
-
-            Args:
-                key: of the dict
-
-            Return:
-                value of the key
-        """
-
-        valuecache = self.cache_data.get(key)
-        return valuecache
+        ''' Return value stored in `key` of cache.
+        If key is None or does not exist in cache, return None. '''
+        if key is not None and key in self.cache_data:
+            return self.cache_data[key]
+        return None
