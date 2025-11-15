@@ -36,4 +36,3 @@ def is_valid(hashed_password: bytes, password: str) -> bool:
                            hashed_password)
 
     return valid
-    
