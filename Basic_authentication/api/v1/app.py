@@ -13,9 +13,14 @@ app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 auth = None
-if getenv("AUTH_TYPE") == "auth":
+auth_type = getenv("AUTH_TYPE")
+
+if auth_type == "auth":
     from api.v1.auth.auth import Auth
     auth = Auth()
+elif auth_type == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
+    auth = BasicAuth()
 
 
 @app.before_request
@@ -31,7 +36,6 @@ def before_request_func():
         "/api/v1/forbidden/"
     ]
 
-    # require_auth returns True if authentication is required
     if auth.require_auth(request.path, excluded_paths):
         if auth.authorization_header(request) is None:
             abort(401)
