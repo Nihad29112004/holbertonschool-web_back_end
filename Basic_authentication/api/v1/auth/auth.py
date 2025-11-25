@@ -25,7 +25,6 @@ class Auth:
         if not excluded_paths:
             return True
 
-        # Ensure path ends with a slash for comparison
         if not path.endswith("/"):
             path += "/"
 
@@ -34,15 +33,17 @@ class Auth:
                 if path == excluded:
                     return False
             else:
-                if path.rstrip("/") == excluded:
+                if path.rstrip("/") == excluded.rstrip("/"):
                     return False
         return True
 
     def authorization_header(self, request=None) -> str:
         """
-        Returns None for now. request is the Flask request object
+        Return value of Authorization header in request
         """
-        return None
+        if request is None:
+            return None
+        return request.headers.get("Authorization")
 
     def current_user(self, request=None):
         """
