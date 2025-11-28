@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""API app module for Holberton School."""
-
+"""API app module"""
 from os import getenv
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
@@ -20,34 +19,28 @@ elif AUTH_TYPE == "session_auth":
     auth = SessionAuth()
 
 app = Flask(__name__)
-# ✔ URL prefix /api/v1 əlavə edildi ki /api/v1/status düzgün işləsin
-app.register_blueprint(app_views, url_prefix="/api/v1")
+app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 
 @app.errorhandler(404)
 def not_found(error):
-    """404 error handler."""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error):
-    """401 error handler."""
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error):
-    """403 error handler."""
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def before_request_handler():
-    """
-    Assign current_user and check authentication before each request.
-    """
+    """Assign current_user and check authentication"""
     if auth is None:
         request.current_user = None
         return
@@ -61,24 +54,18 @@ def before_request_handler():
         "/api/v1/unauthorized/",
         "/api/v1/forbidden",
         "/api/v1/forbidden/",
-        "/api/v1/auth_session/login/",
+        "/api/v1/auth_session/login",
+        "/api/v1/auth_session/login/"
     ]
 
     if not auth.require_auth(request.path, excluded_paths):
         return
 
-    if AUTH_TYPE == "session_auth":
-        # session_auth üçün həm Authorization header, həm də session cookie yoxdursa → 401
-        if auth.authorization_header(request) is None and auth.session_cookie(request) is None:
-            abort(401)
-        if request.current_user is None:
-            abort(403)
-    else:
-        # BasicAuth və Auth üçün əvvəlki davranış
-        if auth.authorization_header(request) is None:
-            abort(401)
-        if request.current_user is None:
-            abort(403)
+    if auth.authorization_header(request) is None and auth.session_cookie(request) is None:
+        abort(401)
+
+    if request.current_user is None:
+        abort(403)
 
 
 if __name__ == "__main__":
