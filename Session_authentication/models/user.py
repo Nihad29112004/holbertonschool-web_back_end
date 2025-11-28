@@ -2,7 +2,13 @@
 """ User model """
 import uuid
 
+
 class User:
+    """User model class.
+    Represents a system user with authentication attributes
+    such as email, password, first name, and last name.
+    """
+
     __users = []
 
     def __init__(self):
