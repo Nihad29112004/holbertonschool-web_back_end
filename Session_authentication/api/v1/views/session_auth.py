@@ -7,7 +7,7 @@ from os import getenv
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login():
     """Handle login for SessionAuth"""
-    from api.v1.app import auth  # import burada olmalı, circular importdan qaçmaq üçün
+    from api.v1.app import auth
     if auth is None:
         abort(404)
 
@@ -34,3 +34,14 @@ def login():
     if cookie_name:
         res.set_cookie(cookie_name, session_id)
     return res
+
+@app_views.route('/auth_session/logout', methods=['DELETE'], strict_slashes=False)
+def logout():
+    """Handle logout for SessionAuth"""
+    from api.v1.app import auth
+    if auth is None:
+        abort(404)
+
+    if not auth.destroy_session(request):
+        abort(404)
+    return jsonify({}), 200
