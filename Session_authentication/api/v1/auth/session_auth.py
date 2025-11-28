@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Session Authentication view module."""
-from flask import jsonify, request, abort, make_response
+from flask import jsonify, request
 from models.user import User
+from api.v1.views import app_views
+
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 @app_views.route('/auth_session/login/', methods=['POST'], strict_slashes=False)
@@ -23,11 +25,11 @@ def login():
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
 
-    # Import auth instance here to avoid circular import
+    # Import auth locally to avoid circular import
     from api.v1.app import auth
 
     session_id = auth.create_session(user.id)
-    cookie_name = auth.SESSION_NAME if hasattr(auth, 'SESSION_NAME') else "_my_session_id"
+    cookie_name = getattr(auth, 'SESSION_NAME', '_my_session_id')
 
     response = jsonify(user.to_json())
     response.set_cookie(cookie_name, session_id)
