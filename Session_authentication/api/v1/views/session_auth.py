@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Session authentication views"""
+"""Session authentication views for SessionAuth"""
 from flask import request, jsonify, make_response, abort
 from api.v1.views import app_views
 from os import getenv
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login():
-    """Login route for session authentication"""
+    """Handle login for SessionAuth"""
+    # Import auth here to avoid circular import
     from api.v1.app import auth
     if auth is None:
         abort(404)
