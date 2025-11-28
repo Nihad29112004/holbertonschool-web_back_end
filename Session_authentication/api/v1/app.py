@@ -5,6 +5,7 @@ from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
 from api.v1.views import app_views
 
+
 auth = None
 AUTH_TYPE = getenv("AUTH_TYPE")
 
@@ -15,6 +16,7 @@ elif AUTH_TYPE == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
 
+
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
@@ -22,49 +24,50 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 @app.errorhandler(404)
 def not_found(error):
+    """404 error"""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error):
+    """401 error"""
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error):
+    """403 error"""
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def before_request_handler():
-    """ Run before each request """
+    """Run before each request"""
+
     if auth is None:
+        request.current_user = None
         return
 
-    # Excluded paths
+    # 🔥 1. GÖREVDE İSTENEN: önce current_user ata
+    request.current_user = auth.current_user(request)
+
     excluded_paths = [
         "/api/v1/status/",
         "/api/v1/unauthorized/",
         "/api/v1/forbidden/",
     ]
 
-    # Require authentication?
-    if auth.require_auth(request.path, excluded_paths):
+    # 🔥 2. require_auth kontrolü
+    if not auth.require_auth(request.path, excluded_paths):
+        return
 
-        # Missing Authorization header → 401
-        if auth.authorization_header(request) is None:
-            abort(401)
+    # 🔥 3. Authorization header yok → 401
+    if auth.authorization_header(request) is None:
+        abort(401)
 
-        # Resolve user
-        if auth.current_user(request) is None:
-            abort(403)
-
-        # 🔥 Holberton’un istediği adım
-        request.current_user = auth.current_user(request)
-
-    else:
-        # Excluded endpointlerde current_user None olsun
-        request.current_user = None
+    # 🔥 4. current_user None ise → 403
+    if request.current_user is None:
+        abort(403)
 
 
 if __name__ == "__main__":
