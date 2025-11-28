@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Index / status route """
+"""Index / status route"""
 from api.v1.views import app_views
 from flask import jsonify
 
