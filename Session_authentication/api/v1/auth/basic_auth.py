@@ -7,12 +7,16 @@ from models.user import User
 
 
 class BasicAuth(Auth):
+    """ Basic authentication class """
+
     def extract_base64_authorization_header(self, authorization_header: str) -> str:
+        """Extract base64 part from Authorization header"""
         if type(authorization_header) is not str or not authorization_header.startswith("Basic "):
             return None
         return authorization_header.split(" ")[1]
 
     def decode_base64_authorization_header(self, base64_authorization_header: str) -> str:
+        """Decode base64 string"""
         if type(base64_authorization_header) is not str:
             return None
         try:
@@ -21,11 +25,13 @@ class BasicAuth(Auth):
             return None
 
     def extract_user_credentials(self, decoded: str) -> Tuple[str, str]:
+        """Extract email and password from decoded string"""
         if type(decoded) is not str or ":" not in decoded:
             return None, None
         return tuple(decoded.split(":", 1))
 
     def user_object_from_credentials(self, email: str, pwd: str) -> TypeVar('User'):
+        """Return user instance if email and password are valid"""
         if type(email) is not str or type(pwd) is not str:
             return None
         users = User.search({"email": email})
@@ -37,6 +43,7 @@ class BasicAuth(Auth):
         return user
 
     def current_user(self, request=None) -> TypeVar('User'):
+        """Return current user based on request Authorization header"""
         if request is None:
             return None
         header = self.authorization_header(request)
