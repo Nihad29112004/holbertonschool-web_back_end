@@ -7,7 +7,7 @@ from os import getenv
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login():
     """Handle login for SessionAuth"""
-    from api.v1.app import auth  # import here to avoid circular import
+    from api.v1.app import auth  # import burada olmalı, circular importdan qaçmaq üçün
     if auth is None:
         abort(404)
 
