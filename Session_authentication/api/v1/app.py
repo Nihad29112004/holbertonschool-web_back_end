@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""API app module."""
+"""API app module for Holberton School."""
+
 from os import getenv
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
@@ -43,7 +44,9 @@ def forbidden(error):
 
 @app.before_request
 def before_request_handler():
-    """Assign current_user and check authentication."""
+    """
+    Assign current_user and check authentication before each request.
+    """
     if auth is None:
         request.current_user = None
         return
@@ -57,16 +60,25 @@ def before_request_handler():
         "/api/v1/unauthorized/",
         "/api/v1/forbidden",
         "/api/v1/forbidden/",
+        "/api/v1/auth_session/login/",  # <--- yeni path
     ]
 
     if not auth.require_auth(request.path, excluded_paths):
         return
 
-    if auth.authorization_header(request) is None:
-        abort(401)
-
-    if request.current_user is None:
-        abort(403)
+    if AUTH_TYPE == "session_auth":
+        # Həm authorization_header, həm də session_cookie None → 401
+        if auth.authorization_header(request) is None and auth.session_cookie(request) is None:
+            abort(401)
+        # current_user None → 403
+        if request.current_user is None:
+            abort(403)
+    else:
+        # digər auth növləri üçün BasicAuth və Auth
+        if auth.authorization_header(request) is None:
+            abort(401)
+        if request.current_user is None:
+            abort(403)
 
 
 if __name__ == "__main__":
