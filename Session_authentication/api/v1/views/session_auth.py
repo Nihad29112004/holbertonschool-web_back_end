@@ -8,7 +8,7 @@ from api.v1.views import app_views
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login():
     """POST /auth_session/login: create a session and return user info"""
-    from api.v1.app import auth  # import here to avoid circular import
+    from api.v1.app import auth
     from models.user import User
     import os
 
@@ -38,7 +38,7 @@ def login():
 @app_views.route('/auth_session/logout', methods=['DELETE'], strict_slashes=False)
 def logout():
     """DELETE /auth_session/logout: destroys user session"""
-    from api.v1.app import auth  # import here to avoid circular import
+    from api.v1.app import auth
 
     if not auth.destroy_session(request):
         abort(404)
