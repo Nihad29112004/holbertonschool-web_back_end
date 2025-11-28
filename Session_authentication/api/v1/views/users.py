@@ -7,6 +7,7 @@ from models.user import User
 
 @app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
 def get_user(user_id):
+    """Retrieve a User object or the authenticated user if 'me'."""
     if user_id == "me":
         if request.current_user is None:
             abort(404)

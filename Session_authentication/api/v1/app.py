@@ -22,21 +22,25 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 @app.errorhandler(404)
 def not_found(error):
+    """404 error"""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error):
+    """401 error"""
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error):
+    """403 error"""
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def before_request_handler():
+    """Assign current_user and check authentication"""
     if auth is None:
         request.current_user = None
         return
@@ -46,7 +50,7 @@ def before_request_handler():
     excluded_paths = [
         "/api/v1/status",
         "/api/v1/unauthorized",
-        "/api/v1/forbidden",
+        "/api/v1/forbidden"
     ]
 
     if not auth.require_auth(request.path, excluded_paths):
