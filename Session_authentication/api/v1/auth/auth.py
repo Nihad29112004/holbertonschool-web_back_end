@@ -3,6 +3,7 @@
 
 from typing import List, TypeVar
 from flask import request
+from os import getenv
 
 
 class Auth:
@@ -10,12 +11,12 @@ class Auth:
     Base authentication class.
 
     Methods to be inherited by other authentication mechanisms:
-
-    - require_auth(path, excluded_paths): Check if authentication is required
-      for a given path.
-    - authorization_header(request): Return the Authorization header from a request.
-    - current_user(request): Return the current user (None by default).
+    - require_auth(path, excluded_paths)
+    - authorization_header(request)
+    - current_user(request)
+    - session_cookie(request)
     """
+
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
         Determine if the requested path requires authentication.
@@ -29,10 +30,8 @@ class Auth:
         """
         if path is None or not excluded_paths:
             return True
-        if path.endswith('/'):
-            path = path
-        else:
-            path += '/'
+        if not path.endswith("/"):
+            path += "/"
         return path not in excluded_paths
 
     def authorization_header(self, request=None) -> str:
@@ -60,3 +59,22 @@ class Auth:
             None: Always returns None in the base class.
         """
         return None
+
+    def session_cookie(self, request=None):
+        """
+        Return the value of the session cookie from the request.
+
+        Args:
+            request (flask.Request): The Flask request object.
+
+        Returns:
+            str or None: The cookie value if present, else None.
+        """
+        if request is None:
+            return None
+
+        cookie_name = getenv("SESSION_NAME")
+        if cookie_name is None:
+            return None
+
+        return request.cookies.get(cookie_name)
