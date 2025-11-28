@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""API app module"""
+"""API app module for Holberton School."""
 from os import getenv
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
@@ -40,7 +40,7 @@ def forbidden(error):
 
 @app.before_request
 def before_request_handler():
-    """Assign current_user and check authentication"""
+    """Assign current_user and check authentication."""
     if auth is None:
         request.current_user = None
         return
