@@ -20,33 +20,23 @@ app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 
-@app.route('/api/v1/status', methods=['GET'], strict_slashes=False)
-def status():
-    """Return OK status"""
-    return jsonify({"status": "OK"})
-
-
 @app.errorhandler(404)
 def not_found(error):
-    """404 error"""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error):
-    """401 error"""
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error):
-    """403 error"""
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def before_request_handler():
-    """Run before each request"""
     if auth is None:
         request.current_user = None
         return
