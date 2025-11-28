@@ -5,7 +5,6 @@ from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
 from api.v1.views import app_views
 
-
 auth = None
 AUTH_TYPE = getenv("AUTH_TYPE")
 
@@ -16,10 +15,15 @@ elif AUTH_TYPE == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
 
-
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+
+
+@app.route('/api/v1/status', methods=['GET'], strict_slashes=False)
+def status():
+    """Return OK status"""
+    return jsonify({"status": "OK"})
 
 
 @app.errorhandler(404)
@@ -43,29 +47,24 @@ def forbidden(error):
 @app.before_request
 def before_request_handler():
     """Run before each request"""
-
     if auth is None:
         request.current_user = None
         return
 
-    # 🔥 1. GÖREVDE İSTENEN: önce current_user ata
     request.current_user = auth.current_user(request)
 
     excluded_paths = [
-        "/api/v1/status/",
-        "/api/v1/unauthorized/",
-        "/api/v1/forbidden/",
+        "/api/v1/status",
+        "/api/v1/unauthorized",
+        "/api/v1/forbidden",
     ]
 
-    # 🔥 2. require_auth kontrolü
     if not auth.require_auth(request.path, excluded_paths):
         return
 
-    # 🔥 3. Authorization header yok → 401
     if auth.authorization_header(request) is None:
         abort(401)
 
-    # 🔥 4. current_user None ise → 403
     if request.current_user is None:
         abort(403)
 

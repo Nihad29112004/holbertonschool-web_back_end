@@ -5,6 +5,7 @@ from api.v1.auth.auth import Auth
 from typing import Tuple, TypeVar
 from models.user import User
 
+
 class BasicAuth(Auth):
     def extract_base64_authorization_header(self, authorization_header: str) -> str:
         if type(authorization_header) is not str or not authorization_header.startswith("Basic "):
@@ -36,8 +37,16 @@ class BasicAuth(Auth):
         return user
 
     def current_user(self, request=None) -> TypeVar('User'):
+        if request is None:
+            return None
         header = self.authorization_header(request)
         b64 = self.extract_base64_authorization_header(header)
+        if b64 is None:
+            return None
         decoded = self.decode_base64_authorization_header(b64)
+        if decoded is None:
+            return None
         email, pwd = self.extract_user_credentials(decoded)
+        if email is None or pwd is None:
+            return None
         return self.user_object_from_credentials(email, pwd)
