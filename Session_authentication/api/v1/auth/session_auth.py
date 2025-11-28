@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-"""Session Authentication view module."""
-from flask import jsonify, request
-from models.user import User
+"""Session Authentication Views."""
+from flask import request, jsonify, abort, make_response
 from api.v1.views import app_views
+from models.user import User
+import os
 
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
-@app_views.route('/auth_session/login/', methods=['POST'], strict_slashes=False)
 def login():
-    """Handle user login using SessionAuth."""
+    """Handle POST /auth_session/login to create a session for a user."""
+    # Import here to avoid circular import
+    from api.v1.app import auth
+
     email = request.form.get('email')
     password = request.form.get('password')
 
-    if not email:
+    if email is None or email.strip() == "":
         return jsonify({"error": "email missing"}), 400
-    if not password:
+
+    if password is None or password.strip() == "":
         return jsonify({"error": "password missing"}), 400
 
     users = User.search({"email": email})
@@ -25,12 +29,11 @@ def login():
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
 
-    # Import auth locally to avoid circular import
-    from api.v1.app import auth
-
     session_id = auth.create_session(user.id)
-    cookie_name = getattr(auth, 'SESSION_NAME', '_my_session_id')
+    if session_id is None:
+        abort(500)
 
-    response = jsonify(user.to_json())
-    response.set_cookie(cookie_name, session_id)
-    return response
+    resp = make_response(jsonify(user.to_json()))
+    cookie_name = os.getenv("SESSION_NAME")
+    resp.set_cookie(cookie_name, session_id)
+    return resp
