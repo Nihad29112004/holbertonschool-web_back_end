@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" API app """
+"""API app module for Holberton School."""
 from os import getenv
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
@@ -25,25 +25,25 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 @app.errorhandler(404)
 def not_found(error):
-    """404 error"""
+    """404 error handler."""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error):
-    """401 error"""
+    """401 error handler."""
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error):
-    """403 error"""
+    """403 error handler."""
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def before_request_handler():
-    """Assign current_user and check authentication"""
+    """Assign current_user and check authentication."""
     if auth is None:
         request.current_user = None
         return
