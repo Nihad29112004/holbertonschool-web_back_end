@@ -9,7 +9,7 @@ from models.base_model import BaseModel
 class User(BaseModel):
     """
     User class that inherits from BaseModel.
-    Represents a system user with authentication attributes.
+    Represents a system user for authentication.
     """
 
     email = ""
