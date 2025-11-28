@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""API app module for Holberton School."""
+"""API app module."""
 from os import getenv
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS

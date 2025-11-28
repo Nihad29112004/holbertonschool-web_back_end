@@ -2,7 +2,6 @@
 """Session authentication module."""
 
 from api.v1.auth.auth import Auth
-from flask import request
 from typing import TypeVar
 
 
@@ -16,6 +15,11 @@ class SessionAuth(Auth):
     def current_user(self, request=None) -> TypeVar('User'):
         """
         Return None for all requests.
-        Minimal implementation so that /users returns 403 with Authorization header.
+
+        Args:
+            request (flask.Request): The Flask request object.
+
+        Returns:
+            None
         """
         return None
