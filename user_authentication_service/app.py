@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Flask app with user registration, login, and logout endpoints
+Flask app with user registration, login, logout, and profile endpoints
 """
 from flask import Flask, jsonify, request, abort, make_response, redirect
 from auth import Auth
@@ -58,6 +58,18 @@ def logout():
 
     AUTH.destroy_session(user.id)
     return redirect("/", code=302)
+
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    """Return the profile of a logged-in user"""
+    session_id = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(session_id)
+
+    if user is None:
+        abort(403)
+
+    return jsonify({"email": user.email}), 200
 
 
 if __name__ == "__main__":
