@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
-"""Github org client"""
-
-import requests
-
-
-def get_json(url):
-    """Fetch JSON data"""
-    response = requests.get(url)
-    return response.json()
+import unittest
+from unittest.mock import patch
+from parameterized import parameterized
+from client import GithubOrgClient
 
 
-class GithubOrgClient:
-    """Github Org Client"""
+class TestGithubOrgClient(unittest.TestCase):
+    """Tests for GithubOrgClient"""
 
-    ORG_URL = "https://api.github.com/orgs/{org}"
+    @parameterized.expand([
+        ("google",),
+        ("abc",),
+    ])
+    @patch("client.get_json")
+    def test_org(self, org_name, mock_get_json):
+        """Test that org returns the correct value"""
 
-    def __init__(self, org_name):
-        self._org_name = org_name
+        expected = {"payload": True}
+        mock_get_json.return_value = expected
 
-    @property
-    def org(self):
-        """Return organization information"""
-        url = self.ORG_URL.format(org=self._org_name)
-        return get_json(url)
+        client = GithubOrgClient(org_name)
+        result = client.org
+
+        mock_get_json.assert_called_once_with(
+            f"https://api.github.com/orgs/{org_name}"
+        )
+        self.assertEqual(result, expected)
