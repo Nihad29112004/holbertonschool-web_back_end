@@ -16,11 +16,10 @@ app.config.from_object(Config)
 
 
 def get_locale():
-    """ Locale language
-        Return:
-            Best match to the language
-    """
     return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+babel = Babel(app, locale_selector=get_locale)
+
 
 
 # Dekoratör yerine parametre ile bağlama (Babel ≥3)
