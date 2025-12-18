@@ -5,34 +5,26 @@ from flask_babel import Babel, _
 
 
 class Config(object):
-    """ Configuration Babel """
     LANGUAGES = ["en", "fr"]
-    BABEL_DEFAULT_TIMEZONE = 'UTC'
     BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_TIMEZONE = 'UTC'
 
 
 app = Flask(__name__, template_folder='templates')
 app.config.from_object(Config)
-babel = Babel(app)
 
 
-@babel.localeselector
 def get_locale():
-    """ Locale language
-
-        Return:
-            Best match to the language
-    """
+    """Return best match for supported languages"""
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
-@app.route('/', methods=['GET'], strict_slashes=False)
-def hello_world():
-    """ Greeting
+# Decorator yerine parametre ile bağlama
+babel = Babel(app, locale_selector=get_locale)
 
-        Return:
-            Initial template html
-    """
+
+@app.route('/', strict_slashes=False)
+def home():
     return render_template('3-index.html')
 
 
