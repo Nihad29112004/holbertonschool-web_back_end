@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
 """
-Mock user login system with Flask-Babel.
+Mock login system with Flask-Babel for Task 5.
 
-This module demonstrates:
-
-- Mocking user login using URL parameter ?login_as=[id].
-- Setting g.user in before_request.
-- Displaying localized messages for logged-in or anonymous users.
-- Using the _() function for translations.
+- Users table
+- login_as URL parameter
+- before_request sets g.user
+- Localized messages
 """
 
 from flask import Flask, render_template, request, g
 from flask_babel import Babel, _
 
-# Mock users table
+# Users table
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -23,7 +21,6 @@ users = {
 
 
 class Config:
-    """Flask-Babel configuration"""
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
@@ -35,13 +32,7 @@ app.config.from_object(Config)
 
 def get_locale():
     """
-    Determine the locale to use.
-
-    Checks URL parameter ?locale=fr|en first.
-    If not present or unsupported, returns best match from Accept-Language header.
-
-    Returns:
-        str: Locale code ('en' or 'fr').
+    Determine the locale from URL parameter or Accept-Language.
     """
     locale = request.args.get("locale")
     if locale and locale in app.config["LANGUAGES"]:
@@ -55,10 +46,10 @@ app.jinja_env.globals['get_locale'] = get_locale  # Template access
 
 def get_user():
     """
-    Get user dictionary based on login_as URL parameter.
+    Retrieve user dict based on login_as parameter.
 
     Returns:
-        dict or None: User dictionary or None if not found.
+        dict or None
     """
     try:
         user_id = int(request.args.get("login_as"))
@@ -69,18 +60,13 @@ def get_user():
 
 @app.before_request
 def before_request():
-    """Executed before each request; sets g.user"""
+    """Set g.user for the request"""
     g.user = get_user()
 
 
 @app.route("/", strict_slashes=False)
 def home():
-    """
-    Render the home page with localized messages.
-
-    Returns:
-        str: Rendered HTML page.
-    """
+    """Render home page with localized messages"""
     return render_template("5-index.html")
 
 
