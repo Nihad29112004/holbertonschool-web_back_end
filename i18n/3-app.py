@@ -5,6 +5,7 @@ from flask_babel import Babel, _
 
 
 class Config(object):
+    """Babel configuration"""
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
@@ -15,18 +16,18 @@ app.config.from_object(Config)
 
 
 def get_locale():
-    """Return best match for supported languages"""
+    """Return best match with supported languages"""
     return request.accept_languages.best_match(app.config["LANGUAGES"])
 
 
-# Babel initialization (checker uyumlu)
 babel = Babel(app, locale_selector=get_locale)
 
 
 @app.route("/", strict_slashes=False)
 def home():
+    """Render the home page with localized messages"""
     return render_template("3-index.html")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000")
+    app.run(host="0.0.0.0", port=5000)
