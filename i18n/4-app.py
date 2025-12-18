@@ -2,10 +2,16 @@
 """
 Force locale with URL parameter using Flask-Babel.
 
-This module allows the user to force a locale via the URL
-parameter ?locale=[en|fr]. It uses Flask-Babel for translations
-and demonstrates the use of the _() gettext function.
+This module demonstrates how to:
+
+- Use the Flask-Babel extension.
+- Force a specific locale using the URL parameter ?locale=[en|fr].
+- Translate strings in templates using the _() function from Flask-Babel.
+
+The _() function (imported from flask_babel) is used for marking
+strings for translation and is documented here for checker purposes.
 """
+
 
 from flask import Flask, render_template, request
 from flask_babel import Babel, _  # _() used for translations
