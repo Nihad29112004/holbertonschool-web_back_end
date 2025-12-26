@@ -1,0 +1,11 @@
+{
+  "name": "task_0",
+  "version": "1.0.0",
+  "description": "Unit tests in JS",
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0"
+  }
+}
